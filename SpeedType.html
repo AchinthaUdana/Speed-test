@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeedType | Typing Speed Test</title>
+    <style>
+        :root {
+            --primary-color: #00ff88;
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --text-color: #e0e0e0;
+            --secondary-text: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--secondary-text);
+            font-size: 1.1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--darker-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+        }
+
+        .text-display {
+            background-color: #1e1e1e;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            min-height: 150px;
+        }
+
+        .text-display span {
+            position: relative;
+        }
+
+        .text-display span.current {
+            background-color: rgba(0, 255, 136, 0.2);
+            border-left: 2px solid var(--primary-color);
+            animation: blink 1s infinite;
+        }
+
+        .text-display span.correct {
+            color: var(--primary-color);
+        }
+
+        .text-display span.incorrect {
+            color: #ff5555;
+            text-decoration: underline;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .input-area {
+            width: 100%;
+        }
+
+        #typing-input {
+            width: 100%;
+            padding: 1rem;
+            background-color: #1e1e1e;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            resize: none;
+            outline: none;
+        }
+
+        #typing-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: #00cc6d;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #555;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--darker-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid var(--primary-color);
+        }
+
+        .modal-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-stat {
+            background-color: #1e1e1e;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .result-stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.3rem;
+        }
+
+        .result-stat-label {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+        }
+
+        .close-modal {
+            margin-top: 1rem;
+        }
+
+        footer {
+            margin-top: 2rem;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .text-display {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SpeedType</h1>
+        <p class="subtitle">Test your typing speed and accuracy</p>
+    </header>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="wpm">0</div>
+                <div class="stat-label">WPM</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="accuracy">0</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="time">60</div>
+                <div class="stat-label">Seconds</div>
+            </div>
+        </div>
+
+        <div class="text-display" id="text-display"></div>
+
+        <div class="input-area">
+            <textarea id="typing-input" placeholder="Start typing here... The timer will begin automatically." rows="5"></textarea>
+        </div>
+
+        <div class="controls">
+            <button id="reset-btn">Reset Test</button>
+        </div>
+    </div>
+
+    <div class="result-modal" id="result-modal">
+        <div class="modal-content">
+            <h2>Test Completed!</h2>
+            <div class="result-stats">
+                <div class="result-stat">
+                    <div class="result-stat-value" id="final-wpm">0</div>
+                    <div class="result-stat-label">Words Per Minute</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="final-accuracy">0%</div>
+                    <div class="result-stat-label">Accuracy</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="final-characters">0</div>
+                    <div class="result-stat-label">Characters</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-stat-value" id="final-errors">0</div>
+                    <div class="result-stat-label">Errors</div>
+                </div>
+            </div>
+            <button class="close-modal" id="close-modal">Try Again</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>SpeedType &copy; 2023 | Designed by NovaForge</p>
+    </footer>
+
+    <script>
+        // Sample texts for typing test
+        const sampleTexts = [
+            "The quick brown fox jumps over the lazy dog. This sentence contains all the letters in the English alphabet. Typing is an essential skill in today's digital world.",
+            "Programming is the process of creating a set of instructions that tell a computer how to perform a task. JavaScript is one of the core technologies of the World Wide Web.",
+            "Practice makes perfect. The more you type, the faster and more accurate you will become. Try to focus on accuracy first, then gradually increase your speed over time.",
+            "The best way to predict the future is to invent it. Computer science is no more about computers than astronomy is about telescopes. Think different and challenge the status quo.",
+            "To be or not to be, that is the question. Whether 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune or to take arms against a sea of troubles."
+        ];
+
+        // DOM elements
+        const textDisplay = document.getElementById('text-display');
+        const typingInput = document.getElementById('typing-input');
+        const resetBtn = document.getElementById('reset-btn');
+        const wpmDisplay = document.getElementById('wpm');
+        const accuracyDisplay = document.getElementById('accuracy');
+        const timeDisplay = document.getElementById('time');
+        const resultModal = document.getElementById('result-modal');
+        const finalWpm = document.getElementById('final-wpm');
+        const finalAccuracy = document.getElementById('final-accuracy');
+        const finalCharacters = document.getElementById('final-characters');
+        const finalErrors = document.getElementById('final-errors');
+        const closeModal = document.getElementById('close-modal');
+
+        // Test variables
+        let currentText = '';
+        let timer;
+        let timeLeft = 60;
+        let isTyping = false;
+        let totalCharacters = 0;
+        let correctCharacters = 0;
+        let errors = 0;
+        let startTime;
+
+        // Initialize the test
+        function initTest() {
+            // Get a random sample text
+            currentText = sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
+            
+            // Display the text with each character in a span
+            textDisplay.innerHTML = '';
+            for (let i = 0; i < currentText.length; i++) {
+                const charSpan = document.createElement('span');
+                charSpan.textContent = currentText[i];
+                textDisplay.appendChild(charSpan);
+            }
+            
+            // Highlight the first character
+            textDisplay.children[0].classList.add('current');
+            
+            // Reset variables
+            timeLeft = 60;
+            isTyping = false;
+            totalCharacters = 0;
+            correctCharacters = 0;
+            errors = 0;
+            
+            // Update displays
+            timeDisplay.textContent = timeLeft;
+            wpmDisplay.textContent = '0';
+            accuracyDisplay.textContent = '0';
+            
+            // Clear input
+            typingInput.value = '';
+            typingInput.disabled = false;
+            typingInput.focus();
+            
+            // Clear any existing timer
+            clearInterval(timer);
+        }
+
+        // Start the typing test
+        function startTest() {
+            if (isTyping) return;
+            
+            isTyping = true;
+            startTime = new Date().getTime();
+            
+            // Start timer
+            timer = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = timeLeft;
+                
+                // Calculate WPM
+                const elapsedMinutes = (60 - timeLeft) / 60;
+                const wpm = Math.round((correctCharacters / 5) / elapsedMinutes) || 0;
+                wpmDisplay.textContent = wpm;
+                
+                // Calculate accuracy
+                const accuracy = totalCharacters > 0 ? Math.round((correctCharacters / totalCharacters) * 100) : 0;
+                accuracyDisplay.textContent = accuracy;
+                
+                // End test if time runs out
+                if (timeLeft <= 0) {
+                    endTest();
+                }
+            }, 1000);
+        }
+
+        // End the typing test
+        function endTest() {
+            clearInterval(timer);
+            isTyping = false;
+            typingInput.disabled = true;
+            
+            // Calculate final stats
+            const elapsedMinutes = 1; // 60 seconds = 1 minute
+            const wpm = Math.round((correctCharacters / 5) / elapsedMinutes) || 0;
+            const accuracy = totalCharacters > 0 ? Math.round((correctCharacters / totalCharacters) * 100) : 0;
+            
+            // Display results in modal
+            finalWpm.textContent = wpm;
+            finalAccuracy.textContent = `${accuracy}%`;
+            finalCharacters.textContent = totalCharacters;
+            finalErrors.textContent = errors;
+            
+            // Show modal
+            resultModal.style.display = 'flex';
+        }
+
+        // Handle typing input
+        typingInput.addEventListener('input', (e) => {
+            if (!isTyping) {
+                startTest();
+            }
+            
+            const inputText = typingInput.value;
+            const inputLength = inputText.length;
+            
+            // Reset all spans
+            const charSpans = textDisplay.querySelectorAll('span');
+            charSpans.forEach(span => {
+                span.classList.remove('current', 'correct', 'incorrect');
+            });
+            
+            // Mark current position
+            if (inputLength < currentText.length) {
+                charSpans[inputLength].classList.add('current');
+            }
+            
+            // Check each character
+            totalCharacters = inputLength;
+            correctCharacters = 0;
+            errors = 0;
+            
+            for (let i = 0; i < inputLength; i++) {
+                if (i >= currentText.length) {
+                    charSpans[i].classList.add('incorrect');
+                    errors++;
+                } else if (inputText[i] === currentText[i]) {
+                    charSpans[i].classList.add('correct');
+                    correctCharacters++;
+                } else {
+                    charSpans[i].classList.add('incorrect');
+                    errors++;
+                }
+            }
+            
+            // Update accuracy in real-time
+            const accuracy = totalCharacters > 0 ? Math.round((correctCharacters / totalCharacters) * 100) : 0;
+            accuracyDisplay.textContent = accuracy;
+            
+            // End test if all text is typed
+            if (inputLength >= currentText.length) {
+                endTest();
+            }
+        });
+
+        // Reset button
+        resetBtn.addEventListener('click', initTest);
+
+        // Close modal button
+        closeModal.addEventListener('click', () => {
+            resultModal.style.display = 'none';
+            initTest();
+        });
+
+        // Initialize the test when page loads
+        window.addEventListener('load', initTest);
+    </script>
+</body>
+</html>
